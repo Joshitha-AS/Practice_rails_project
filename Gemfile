@@ -67,3 +67,7 @@ gem 'mysql2', '~> 0.5.6'
 group :development, :test do
   gem 'dotenv-rails'
 end
+
+gem "devise", "~> 4.9"
+
+gem "devise-jwt", "~> 0.12.1"
