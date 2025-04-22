@@ -5,6 +5,9 @@ class User < ApplicationRecord
       with: /\A(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).+\z/,
       message: "must have at least one letter, one number, and one special character"
     }
+
+    has_one :cart
+
     # Include default devise modules. Others available are:
     # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
     # Include all modules in one line
