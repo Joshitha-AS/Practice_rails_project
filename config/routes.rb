@@ -1,28 +1,35 @@
 Rails.application.routes.draw do
-
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      # Auth with Devise + JWT
+      devise_for :users,
+        path: '',
+        path_names: {
+          sign_in: 'login',
+          sign_out: 'logout',
+          registration: 'signup'
+        },
+        controllers: {
+          sessions: 'api/v1/users/sessions',
+          registrations: 'api/v1/users/registrations'
+        }
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+      # Public product endpoints
+      resources :products, only: [:index, :show]
 
-  # Defines the root path route ("/")
-  # root to: "home#index"
-  devise_for :users,
-             path: "",
-             path_names: {
-               sign_in: "login",
-               sign_out: "logout",
-               registration: "signup"
-             },
-             controllers: {
-               sessions: "users/sessions",
-               registrations: "users/registrations"
-             }
+      # Cart (1 per user)
+      resource :cart, only: [:show, :update, :destroy] do
+        resources :cart_items, only: [:create, :update, :destroy]
+      end
 
-  resources :products
+      # Orders
+      resources :orders, only: [:index, :create, :show] do
+        resources :order_items, only: [:index, :show]
+      end
+    end
+  end
 end
+
+
+
