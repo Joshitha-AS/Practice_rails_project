@@ -19,10 +19,8 @@ Rails.application.routes.draw do
 
       resources :products, only: [:index, :show, :update, :destroy]
 
-      namespace :api do
-        resources :carts, only: [:show, :create, :update, :destroy] do
-          resources :cart_items, only: [:index, :create, :update, :destroy]
-        end
+      resource :cart, only: [:show, :create, :update, :destroy] do
+        resources :cart_items, only: [:index, :create, :update, :destroy]
       end
 
       resources :orders, only: [:index, :create, :show] do

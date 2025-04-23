@@ -4,25 +4,23 @@ module Api
       class SessionsController < Devise::SessionsController
         respond_to :json
 
-        def create
-          user = User.find_by(email: params[:user][:email])
+        private
 
-          if user && user.valid_password?(params[:user][:password])
-            sign_in(user)
-            render json: {
-              message: "Login successful",
-              user: user
-            }, status: :ok
-          else
-            render json: {
-              error: "Invalid email or password"
-            }, status: :unauthorized
-          end
+        # Called on successful login
+        def respond_with(resource, _opts = {})
+          render json: {
+            message: "Login successful",
+            user: resource
+          }, status: :ok
         end
 
-        def destroy
-          sign_out(current_user)
-          render json: { message: "Logout successful" }, status: :ok
+        # Called on logout
+        def respond_to_on_destroy
+          if current_user
+            render json: { message: "Logout successful" }, status: :ok
+          else
+            render json: { message: "User already logged out or not found" }, status: :unauthorized
+          end
         end
       end
     end

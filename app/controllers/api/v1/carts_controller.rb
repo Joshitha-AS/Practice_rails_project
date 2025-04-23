@@ -4,8 +4,7 @@ module Api
       before_action :authenticate_user!
 
       def show
-        cart = current_user.cart
-        render json: cart, include: :cart_items
+        render json: { cart: current_user.cart }
       end
 
       def create
