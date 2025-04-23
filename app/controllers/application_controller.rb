@@ -1,17 +1,21 @@
 class ApplicationController < ActionController::API
-  
+  include ActionController::MimeResponds
+  include ActionController::Cookies
+  include ActionController::RequestForgeryProtection
+  include Devise::Controllers::Helpers
 
-  def current_user
-    @current_user ||= User.find_by(id: 1)  
+
+  # 👇 Proper CSRF handling for API
+  protect_from_forgery with: :null_session, if: -> { request.format.json? }
+  before_action :authenticate_user!
+
+  before_action :configure_permitted_parameters, if: :devise_controller?
+  skip_before_action :authenticate_user!, only: [:create]
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: %i[name avatar])
+    devise_parameter_sanitizer.permit(:account_update, keys: %i[name avatar])
   end
-
-
-  def authenticate_user!
-    render json: { error: "Unauthorized" }, status: :unauthorized unless current_user
-  end
-
-  # protect_from_forgery with: :exception
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  # skip_before_action :verify_authenticity_token, if: -> { request.format.json? }
-  # allow_browser versions: :modern
 end

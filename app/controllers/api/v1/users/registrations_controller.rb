@@ -1,31 +1,33 @@
-module Api
-  module V1
-    module Users
-      class RegistrationsController < Devise::RegistrationsController
-        respond_to :json
+# frozen_string_literal: true
 
-        def create
-          build_resource(sign_up_params)
+class Api::V1::Users::RegistrationsController < Devise::RegistrationsController
+  respond_to :json
 
-          resource.save
-          if resource.persisted?
-            render json: {
-              message: "Sign up successful",
-              user: resource
-            }, status: :created
-          else
-            render json: {
-              errors: resource.errors.full_messages
-            }, status: :unprocessable_entity
-          end
-        end
+  private
 
-        private
-
-        def sign_up_params
-          params.require(:user).permit(:email, :password, :password_confirmation)
-        end
-      end
+  def respond_with(resource, _opts = {})
+    if resource.persisted?
+      render json: {
+        status: {
+          code: 200,
+          message: "Signed up successfully."
+        },
+        data: UserSerializer.new(resource).serializable_hash[:data][:attributes]
+      }, status: :ok
+    else
+      render json: {
+        status: {
+          message: "User couldn't be created successfully. #{resource.errors.full_messages.to_sentence}"
+        }
+      }, status: :unprocessable_entity
     end
+  end
+
+  def sign_up_params
+    params.require(:user).permit(:email, :password, :password_confirmation)
+  end
+
+  def account_update_params
+    params.require(:user).permit(:email, :password, :password_confirmation, :current_password)
   end
 end
