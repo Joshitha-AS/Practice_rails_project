@@ -1,7 +1,7 @@
 module Api
   module V1
     class CartItemsController < ApplicationController
-      before_action :authenticate_user!
+      # before_action :authenticate_user!
       before_action :set_cart
 
       def index
@@ -38,8 +38,9 @@ module Api
       private
 
       def set_cart
-        @cart = current_user.cart
+        @cart = @current_user.cart || @current_user.create_cart
       end
+      
     end
   end
 end

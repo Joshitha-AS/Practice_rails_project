@@ -1,8 +1,11 @@
 Rails.application.routes.draw do
-  # Optional health check
+  
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # API namespace
+  require 'sidekiq/web'
+
+  mount Sidekiq::Web => '/sidekiq'
+  
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       post 'signup', to: 'users/registrations#register'
