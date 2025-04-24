@@ -9,10 +9,19 @@ module Api
         render json: products
       end
 
-      # GET /api/v1/products/:id
-      def show
-        render json: @product
+      def create
+        product=Product.new(product_params)
+        if product.save
+          render json: {message:"product created successfully"}, status: :created
+        end
       end
+
+      # GET /api/v1/products/:id
+     
+  def show
+    product = Product.find(params[:id])
+    render json: product
+  end
 
       # PATCH/PUT /api/v1/products/:id
       def update

@@ -1,33 +1,24 @@
-# frozen_string_literal: true
 
-class Api::V1::Users::RegistrationsController < Devise::RegistrationsController
-  respond_to :json
+class Api::V1::Users::RegistrationsController < ApplicationController
+  skip_before_action :authorize_request, only: [:register]
 
-  private
-
-  def respond_with(resource, _opts = {})
-    if resource.persisted?
-      render json: {
-        status: {
-          code: 200,
-          message: "Signed up successfully."
-        },
-        data: UserSerializer.new(resource).serializable_hash[:data][:attributes]
-      }, status: :ok
+  def register
+    user = User.new(user_params)
+    if user.save
+      token = JsonWebToken.encode(user_id: user.id)
+      render json: { user: user, token: token }, status: :created
     else
-      render json: {
-        status: {
-          message: "User couldn't be created successfully. #{resource.errors.full_messages.to_sentence}"
-        }
-      }, status: :unprocessable_entity
+      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
-  def sign_up_params
-    params.require(:user).permit(:email, :password, :password_confirmation)
+  private
+
+  def user_params
+    params.require(:user).permit(:name, :email, :password)
   end
 
-  def account_update_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :current_password)
+  def serialize_user(user)
+    user.as_json(only: [:id, :name, :email])
   end
 end

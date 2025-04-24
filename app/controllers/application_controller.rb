@@ -1,21 +1,26 @@
-class ApplicationController < ActionController::API
+class ApplicationController < ActionController::API 
+
   include ActionController::MimeResponds
   include ActionController::Cookies
-  include ActionController::RequestForgeryProtection
-  include Devise::Controllers::Helpers
 
+  before_action :authorize_request
+  attr_reader :current_user
 
-  # 👇 Proper CSRF handling for API
-  protect_from_forgery with: :null_session, if: -> { request.format.json? }
-  before_action :authenticate_user!
+  private
 
-  before_action :configure_permitted_parameters, if: :devise_controller?
-  skip_before_action :authenticate_user!, only: [:create]
-
-  protected
-
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: %i[name avatar])
-    devise_parameter_sanitizer.permit(:account_update, keys: %i[name avatar])
+  def authorize_request
+    header = request.headers['Authorization']
+    unless header
+      render json: { error: 'Unauthorized' }, status: :unauthorized and return
+    end
+    token = header.split.last if header
+    decoded = JsonWebToken.decode(token)
+    unless decoded
+      render json: { error: 'Unauthorized' }, status: :unauthorized and return
+    end
+    @current_user = User.find(decoded[:user_id]) if decoded
+  rescue ActiveRecord::RecordNotFound, JWT::DecodeError
+    render json: { error: 'Unauthorized' }, status: :unauthorized and return
   end
+  
 end

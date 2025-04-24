@@ -1,10 +1,9 @@
 module Api
   module V1
     class CartsController < ApplicationController
-      before_action :authenticate_user!
 
       def show
-        cart = current_user.cart || current_user.create_cart
+        cart = @current_user.cart
         render json: { cart: cart }, status: :ok
       end
 

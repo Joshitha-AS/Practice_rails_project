@@ -1,0 +1,15 @@
+      <div class="header">Hi <%= @order.user.email %>,</div>
+
+      <p>Thank you for your order!</p>
+
+      <p>
+        <strong>Order ID:</strong> <%= @order.id %><br>
+        <strong>Total:</strong> $<%= @order.total_price %>
+      </p>
+
+      <p>We'll notify you once it ships.</p>
+
+      <p class="footer">
+        Thanks,<br>
+        <strong>E-commerce App Team</strong>
+      </p>

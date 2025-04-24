@@ -1,33 +1,16 @@
-class Api::V1::Users::SessionsController < Devise::SessionsController
-  respond_to :json
 
-  skip_before_action :verify_authenticity_token
+class Api::V1::Users::SessionsController < ApplicationController
 
-  private
+  skip_before_action :authorize_request, only: [:login]
 
-  def respond_with(resource, _opts = {})
-    render json: {
-      status: {
-        code: 200,
-        message: 'Logged in successfully.',
-        data: {
-          user: UserSerializer.new(resource).serializable_hash[:data][:attributes]
-        }
-      }
-    }, status: :ok
-  end
-
-  def respond_to_on_destroy
-    if current_user
-      render json: {
-        status: 200,
-        message: 'Logged out successfully.'
-      }, status: :ok
+  def login
+    user = User.find_by(email: params[:email])
+    if user&.authenticate(params[:password])
+      token = JsonWebToken.encode(user_id: user.id)
+      render json: { user: user.as_json(only: [:id, :name, :email]), token: token }, status: :ok
     else
-      render json: {
-        status: 401,
-        message: 'No active session found.'
-      }, status: :unauthorized
+      render json: { error: 'Invalid email or password' }, status: :unauthorized
     end
   end
+  
 end
