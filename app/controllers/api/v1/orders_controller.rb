@@ -10,7 +10,7 @@ module Api::V1
       calculate_total(@order)
 
       if @order.save
-        OrderConfirmationJob.perform_later(@order.id)
+        OrderConfirmationWorker.perform_async(@order.id)
         render json: @order, status: :created
       else
         render json: @order.errors, status: :unprocessable_entity
