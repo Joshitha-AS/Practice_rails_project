@@ -19,7 +19,6 @@ module Api
       end
 
   # GET /api/v1/products/:id
-
   def show
     product = Product.find(params[:id])
     render json: @product
@@ -45,11 +44,8 @@ module Api
 
 
       private
-
       def set_product
         @product = Product.find(params[:id])
-      rescue ActiveRecord::RecordNotFound
-        render json: { error: "Product not found" }, status: :not_found
       end
 
       def product_params

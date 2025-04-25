@@ -1,8 +1,4 @@
 class ApplicationController < ActionController::API 
-
-  include ActionController::MimeResponds
-  include ActionController::Cookies
-
   before_action :authorize_request
   attr_reader :current_user
 
