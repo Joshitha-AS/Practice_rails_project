@@ -14,12 +14,11 @@ module Api::V1
         render json: @order.errors, status: :unprocessable_entity
       end
     end
-
+    
+    
     private
     def order_params
       params.require(:order).permit(order_items_attributes: [:product_id, :quantity, :price])
     end
-
-   
   end
 end

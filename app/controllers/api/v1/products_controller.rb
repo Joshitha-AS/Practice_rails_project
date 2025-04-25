@@ -18,11 +18,10 @@ module Api
         end
       end
 
-  # GET /api/v1/products/:id
-  def show
-    product = Product.find(params[:id])
-    render json: @product
-  end
+      # GET /api/v1/products/:id
+      def show
+        render json: @product
+      end
 
       # PATCH/PUT /api/v1/products/:id
       def update
