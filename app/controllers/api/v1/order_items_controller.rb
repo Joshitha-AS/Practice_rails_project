@@ -16,7 +16,7 @@ module Api::V1
 
     def destroy
       @order_item.destroy
-      render json: {meassage: "Order item deleted sucessfully"}
+      head :no_content
     end
 
     private
