@@ -1,7 +1,7 @@
 module Api
   module V1
     class ProductsController < ApplicationController
-      before_action :set_product, only: [:show, :update, :destroy]
+      before_action :set_product, only: [ :show, :update, :destroy ]
 
       # GET /api/v1/products
       def index
@@ -12,15 +12,17 @@ module Api
       def create
         product=Product.new(product_params)
         if product.save
-          render json: {message:"product created successfully"}, status: :created
+          render json: { message: "product created successfully" }, status: :created
+        else
+          render json: { errors: product.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
-      # GET /api/v1/products/:id
-     
+  # GET /api/v1/products/:id
+
   def show
     product = Product.find(params[:id])
-    render json: product
+    render json: @product
   end
 
       # PATCH/PUT /api/v1/products/:id
@@ -40,7 +42,7 @@ module Api
           render json: { error: @product.errors.full_messages }, status: :unprocessable_entity
         end
       end
-      
+
 
       private
 

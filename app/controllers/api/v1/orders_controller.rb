@@ -7,7 +7,7 @@ module Api::V1
 
     def create
       @order = @current_user.orders.new(order_params)
-      calculate_total(@order)
+      
 
       if @order.save
         OrderConfirmationWorker.perform_async(@order.id)
@@ -23,9 +23,6 @@ module Api::V1
       params.require(:order).permit(order_items_attributes: [:product_id, :quantity, :price])
     end
 
-    def calculate_total(order)
-      total = order.order_items.map { |item| item.price * item.quantity }.sum
-      order.total_price = total
-    end
+   
   end
 end
