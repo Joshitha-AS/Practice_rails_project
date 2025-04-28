@@ -76,3 +76,7 @@ gem 'jwt','~> 2.10'
 group :development do
   gem 'letter_opener'
 end
+
+gem 'redis'
+
+gem 'active_model_serializers'
