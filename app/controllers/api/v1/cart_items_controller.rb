@@ -9,7 +9,11 @@ module Api
 
       def create
         cart_item = @cart.cart_items.find_or_initialize_by(product_id: params[:product_id])
-        cart_item.quantity += (params[:quantity] || 1).to_i
+  if cart_item.new_record?
+    cart_item.quantity = (params[:quantity] || 1).to_i
+  else
+    cart_item.quantity += params[:quantity].to_i
+  end
 
         if cart_item.save
           render json: cart_item, status: :created
@@ -30,12 +34,15 @@ module Api
       def destroy
         cart_item = @cart.cart_items.find(params[:id])
         cart_item.destroy
-        render json: {message: "cart item deleted "} 
+        render json: { message: "cart item deleted " }
       end
 
       private
       def set_cart
         @cart = current_user.cart || current_user.create_cart
+      end
+      def cart_item_params
+        params.permit(:product_id, :quantity)
       end
     end
   end
