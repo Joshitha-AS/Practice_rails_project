@@ -29,7 +29,7 @@ Rails.application.configure do
   config.cache_store = :redis_cache_store, {
     url: "redis://localhost:6379/1", # assuming Redis is running locally
     namespace: 'cache',
-    expires_in: 1.hour
+    expires_in: 24.hour
   }
   
 
