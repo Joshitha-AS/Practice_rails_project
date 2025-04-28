@@ -1,7 +1,6 @@
 module Api
   module V1
     class CartItemsController < ApplicationController
-      before_action :authenticate_user!
       before_action :set_cart
 
       def index
@@ -10,7 +9,11 @@ module Api
 
       def create
         cart_item = @cart.cart_items.find_or_initialize_by(product_id: params[:product_id])
-        cart_item.quantity = params[:quantity] || 1
+  if cart_item.new_record?
+    cart_item.quantity = (params[:quantity] || 1).to_i
+  else
+    cart_item.quantity += params[:quantity].to_i
+  end
 
         if cart_item.save
           render json: cart_item, status: :created
@@ -21,7 +24,6 @@ module Api
 
       def update
         cart_item = @cart.cart_items.find(params[:id])
-
         if cart_item.update(quantity: params[:quantity])
           render json: cart_item
         else
@@ -32,13 +34,15 @@ module Api
       def destroy
         cart_item = @cart.cart_items.find(params[:id])
         cart_item.destroy
-        head :no_content
+        render json: { message: "cart item deleted " }
       end
 
       private
-
       def set_cart
-        @cart = current_user.cart
+        @cart = current_user.cart || current_user.create_cart
+      end
+      def cart_item_params
+        params.permit(:product_id, :quantity)
       end
     end
   end
