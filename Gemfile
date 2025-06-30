@@ -71,7 +71,7 @@ end
 gem 'sidekiq'
 
 
-gem 'jwt','~> 2.10'
+gem 'jwt','~> 3.1'
 
 group :development do
   gem 'letter_opener'
